@@ -839,7 +839,15 @@ make_image() {
         fi
     }
 
-    # Write the specific bootloader for [ Rockchip ] boxes
+        # Marvsmart workaround: use rock5b U-Boot if marvsmart-rk3588 doesn't exist
+    if [[ "${board}" == "marvsmart-rk3588" && ! -d "${uboot_path}/${PLATFORM}/${board}" ]]; then
+        echo -e "${INFO} Using rock5b U-Boot as fallback for [ ${board} ]"
+        mkdir -p "${uboot_path}/${PLATFORM}/${board}"
+        cp -f "${uboot_path}/${PLATFORM}/rock5b/idbloader.img" "${uboot_path}/${PLATFORM}/${board}/" 2>/dev/null
+        cp -f "${uboot_path}/${PLATFORM}/rock5b/u-boot.itb" "${uboot_path}/${PLATFORM}/${board}/" 2>/dev/null
+    fi
+
+# Write the specific bootloader for [ Rockchip ] boxes
     [[ "${PLATFORM}" == "rockchip" ]] && {
         bootloader_path="${uboot_path}/${PLATFORM}/${board}"
         if [[ -n "${BOOTLOADER_IMG}" && -f "${bootloader_path}/${BOOTLOADER_IMG}" ]] &&
