@@ -1047,6 +1047,14 @@ refactor_bootfs() {
 
     # Check device configuration files
     [[ -f "${uenv_conf_file}" || -f "${rename_extlinux_file}" || -f "${armbianenv_conf_file}" ]] || error_msg "Missing boot configuration file [ /boot/*Env.txt ]."
+
+    # Copy board-specific DTB from different-files if missing in kernel dtb archive
+    local board_dtb_src="${resource_path}/openwrt-files/different-files/${board}/${FDTFILE}"
+    local board_dtb_dst="dtb/rockchip/${FDTFILE}"
+    if [[ -f "${board_dtb_src}" && ! -f "${board_dtb_dst}" ]]; then
+        cp -f "${board_dtb_src}" "${board_dtb_dst}"
+        echo -e "${INFO} Copied custom DTB: [ ${board_dtb_dst} ]"
+    fi
 }
 
 refactor_rootfs() {
